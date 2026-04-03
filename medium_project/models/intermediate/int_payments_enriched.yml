@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: int_payments_enriched
+    description: "Payment events enriched with inflation factor and accident info."
+    columns:
+      - name: payment_id
+        description: "Unique payment event ID."
+        tests:
+          - unique
+          - not_null
+
+      - name: claim_id
+        description: "Claim identifier."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_claim_base')
+                field: claim_id
+
+      - name: payment_date
+        description: "Date of payment."
+        tests:
+          - not_null
+
+      - name: payment_amount
+        description: "Raw payment amount."
+        tests:
+          - not_null
+          - greater_than_or_equal_to_zero: {}
+
+      - name: payment_amount_inflated
+        description: "Inflation-adjusted payment amount."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: payment_month
+        description: "Payment month."
+
+      - name: payment_year
+        description: "Payment year."
+
+      - name: inflation_factor
+        description: "Inflation factor from calendar."
+
+      - name: accident_year
+        description: "Accident year inherited from claim."

@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: int_dev_month
+    description: "Standardized development month calculations for triangle models."
+    columns:
+      - name: claim_id
+        description: "Claim identifier."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_claim_base')
+                field: claim_id
+
+      - name: valuation_month
+        description: "Valuation month."
+        tests:
+          - not_null
+
+      - name: development_month
+        description: "Months since accident."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: development_quarter
+        description: "Quarters since accident."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: paid_in_month
+        description: "Paid amount in this month."
+
+      - name: paid_to_date
+        description: "Cumulative paid amount."
+
+    tests:
+      - unique:
+          column_name: "claim_id, valuation_month"

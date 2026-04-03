@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: int_claim_monthly_paid
+    description: "Claim × Month date spine with monthly and cumulative paid amounts."
+    columns:
+      - name: claim_id
+        description: "Claim identifier."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_claim_base')
+                field: claim_id
+
+      - name: valuation_month
+        description: "Valuation month."
+        tests:
+          - not_null
+
+      - name: paid_in_month
+        description: "Paid amount in this valuation month."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: paid_to_date
+        description: "Cumulative paid amount."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: accident_year
+        description: "Accident year."
+
+      - name: accident_month
+        description: "Accident month."
+
+    tests:
+      - unique:
+          column_name: "claim_id, valuation_month"

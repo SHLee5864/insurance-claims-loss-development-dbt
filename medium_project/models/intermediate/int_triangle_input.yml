@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: int_triangle_input
+    description: "Unified fact table for triangle calculations (paid + reserve + dev)."
+    columns:
+      - name: claim_id
+        description: "Claim identifier."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_claim_base')
+                field: claim_id
+
+      - name: valuation_month
+        description: "Valuation month."
+        tests:
+          - not_null
+
+      - name: development_month
+        description: "Months since accident."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: paid_to_date
+        description: "Cumulative paid amount."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: case_reserve_amount
+        description: "Case reserve."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: incurred
+        description: "Paid-to-date + case reserve."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+    tests:
+      - unique:
+          column_name: "claim_id, valuation_month"

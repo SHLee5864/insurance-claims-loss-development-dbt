@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: int_claim_base
+    description: "Claim dimension enriched with accident-month flags and region."
+    columns:
+      - name: claim_id
+        description: "Unique claim identifier."
+        tests:
+          - unique
+          - not_null
+
+      - name: claim_key
+        description: "Synthetic claim key for joins."
+
+      - name: policy_number
+        description: "Policy number associated with the claim."
+        tests:
+          - not_null
+
+      - name: accident_date
+        description: "Date of loss occurrence."
+        tests:
+          - not_null
+
+      - name: reported_date
+        description: "Claim reporting date."
+        tests:
+          - not_null
+          - accident_before_report_date: {}
+
+      - name: accident_month
+        description: "Month of accident (truncated)."
+
+      - name: accident_year
+        description: "Accident year."
+
+      - name: loss_type
+        description: "Type of loss."
+        tests:
+          - accepted_values:
+              values: ["collision", "glass", "bodily", "theft"]
+
+      - name: claimant_age
+        description: "Age of claimant at time of loss."
+
+      - name: region
+        description: "Region of the policy."
+        tests:
+          - accepted_values:
+              values: ["North", "South", "East", "West"]
+
+      - name: covid_wave_flag
+        description: "Flag indicating COVID wave period."
+
+      - name: covid_lockdown_flag
+        description: "Flag indicating COVID lockdown period."
+
+      - name: weather_event_flag
+        description: "Flag indicating major weather event."
+
+      - name: travel_boom_flag
+        description: "Flag indicating travel surge period."

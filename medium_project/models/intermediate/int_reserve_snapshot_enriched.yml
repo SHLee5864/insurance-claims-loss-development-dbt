@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: int_reserve_snapshot_enriched
+    description: "Monthly reserve snapshot enriched with accident info."
+    columns:
+      - name: claim_id
+        description: "Claim identifier."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_claim_base')
+                field: claim_id
+
+      - name: valuation_month
+        description: "Valuation month."
+        tests:
+          - not_null
+
+      - name: case_reserve_amount
+        description: "Case reserve at valuation month."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: expense_reserve_amount
+        description: "Expense reserve at valuation month."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: accident_year
+        description: "Accident year."
+
+      - name: accident_month
+        description: "Accident month."
+
+    tests:
+      - unique:
+          column_name: "claim_id, valuation_month"

@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_exposure_summary
+    description: "Accident Year × Region exposure and earned premium summary."
+    columns:
+      - name: accident_year
+        description: "Accident year."
+        tests:
+          - not_null
+
+      - name: region
+        description: "Geographic segment."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["North", "South", "East", "West"]
+
+      - name: earned_exposure
+        description: "Total earned exposure."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+      - name: earned_premium
+        description: "Total earned premium."
+        tests:
+          - greater_than_or_equal_to_zero: {}
+
+    tests:
+      - unique:
+          column_name: "accident_year, region"
