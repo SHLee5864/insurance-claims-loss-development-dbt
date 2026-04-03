@@ -17,11 +17,6 @@ models:
         tests:
           - not_null
 
-      - name: region
-        description: "Geographical region of the policyholder or insured risk."
-        tests:
-          - not_null
-
       - name: inception_date
         description: "Policy inception date."
         tests:

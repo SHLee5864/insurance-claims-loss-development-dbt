@@ -6,7 +6,6 @@ renamed as (
     select
         policy_number as policy_number,
         policy_holder_id,
-        region,
         cast(inception_date as date) as inception_date,
         cast(expiration_date as date) as expiration_date,
         cast(date_month as date) as date_month,

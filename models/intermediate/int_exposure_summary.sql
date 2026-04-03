@@ -5,12 +5,13 @@
 with exposure as (
 
     select
-        policy_number,
-        region,
-        date_month,
-        earned_exposure,
-        earned_premium
-    from {{ ref('stg_exposure') }}
+        e.policy_number,
+        e.date_month,
+        e.earned_exposure,
+        e.earned_premium,
+        p.region
+    from {{ ref('stg_exposure') }} e
+    left join {{ ref('stg_policy') }} p using (policy_number)
 
 ),
 

@@ -29,3 +29,7 @@ models:
           negative values in raw data; no transformation is applied in STG.
         tests:
           - not_null
+
+    tests:
+      - unique:
+          column_name: "claim_id, valuation_date"

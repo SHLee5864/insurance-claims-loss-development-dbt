@@ -27,7 +27,6 @@ ldf_calc AS (
     GROUP BY 1,2
 ),
 
--- 누적 LDF 계산
 cumulative AS (
     SELECT
         dev_month_from,
