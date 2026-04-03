@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: stg_claims
+    description: Standardized staging table for claim-level information. Contains
+      accident and reporting dates, loss type, claimant demographics,
+      and a surrogate claim key for downstream modeling.
+
+    columns:
+      - name: claim_id
+        description: "Unique identifier for each claim."
+        tests:
+          - not_null
+          - unique
+
+      - name: policy_number
+        description: "Policy number associated with the claim."
+        tests:
+          - not_null
+
+      - name: accident_date
+        description: "Date when the accident occurred."
+        tests:
+          - not_null
+
+      - name: reported_date
+        description: "Date when the claim was reported to the insurer."
+        tests:
+          - not_null
+
+      - name: loss_type
+        description: "Categorical type of loss (e.g., collision, theft, injury)."
+        tests:
+          - not_null
+
+      - name: region
+        description: Region where the accident occurred. Defaults to 'unknown' if missing
+          in the raw data.
+        tests:
+          - not_null
+
+      - name: claimant_age
+        description: "Age of the claimant at the time of the accident."
+        tests:
+          - not_null
+
+      - name: claim_key
+        description: "Surrogate key generated from claim_id for dimensional modeling."
+        tests:
+          - not_null
+          - unique

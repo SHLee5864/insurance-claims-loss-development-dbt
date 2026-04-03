@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: Staging table containing claim-related transaction events. Each row
+      represents a lifecycle event such as creation, update, assignment,
+      or closure, with timestamps and handler information.
+
+    columns:
+      - name: transaction_id
+        description: "Unique identifier for each transaction event."
+        tests:
+          - not_null
+          - unique
+
+      - name: claim_id
+        description: "Identifier of the claim associated with the transaction."
+        tests:
+          - not_null
+
+      - name: event_type
+        description: Type of event recorded (e.g., creation, update, assignment, closure).
+        tests:
+          - not_null
+
+      - name: event_timestamp
+        description: "Timestamp when the event occurred."
+        tests:
+          - not_null
+
+      - name: handler_id
+        description: "Identifier of the claim handler responsible for the event."
+        tests:
+          - not_null
+
+      - name: auto_or_manual
+        description: Indicates whether the event was triggered automatically by the system
+          or manually by a human handler.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['auto rule', 'manual adjuster']
+
+      - name: comment
+        description: "Free-text comment associated with the transaction event."

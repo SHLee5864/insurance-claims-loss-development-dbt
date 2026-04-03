@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_reserve_snapshot
+    description: Staging table containing monthly reserve snapshots for each claim.
+      Includes case reserves and expense reserves as recorded on each
+      valuation date. Values are preserved exactly as in the raw source
+      to allow proper data quality checks in INT.
+
+    columns:
+      - name: claim_id
+        description: "Identifier of the claim associated with the reserve snapshot."
+        tests:
+          - not_null
+
+      - name: valuation_date
+        description: "Date when the reserve amounts were evaluated."
+        tests:
+          - not_null
+
+      - name: case_reserve_amount
+        description: Case reserve amount recorded on the valuation date. May contain
+          negative values in raw data; no transformation is applied in STG.
+        tests:
+          - not_null
+
+      - name: expense_reserve_amount
+        description: Expense reserve amount recorded on the valuation date. May contain
+          negative values in raw data; no transformation is applied in STG.
+        tests:
+          - not_null

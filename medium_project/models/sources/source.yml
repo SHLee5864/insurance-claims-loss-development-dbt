@@ -1,0 +1,60 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_policy
+        description: "Synthetic policy-level data"
+        columns:
+          - name: policy_number
+            tests: [not_null, unique]
+
+      - name: raw_exposure
+        description: "Monthly exposure per policy"
+        columns:
+          - name: policy_number
+            tests: [not_null]
+          - name: date_month
+            tests: [not_null]
+
+      - name: raw_claims
+        description: "Claim-level data"
+        columns:
+          - name: claim_id
+            tests: [not_null, unique]
+          - name: policy_number
+            tests: [not_null]
+
+      - name: raw_payments
+        description: "Payment transactions"
+        columns:
+          - name: payment_id
+            tests: [not_null, unique]
+          - name: claim_id
+            tests: [not_null]
+
+      - name: raw_reserve_snapshot
+        description: "Monthly reserve snapshot per claim"
+        columns:
+          - name: claim_id
+            tests: [not_null]
+          - name: valuation_date
+            tests: [not_null]
+
+      - name: calendar
+        description: "Monthly calendar with COVID, weather, travel, inflation signals"
+        columns:
+          - name: date_month
+            tests: [not_null, unique]
+
+      - name: raw_transactions
+        description: "Claim lifecycle event log (opened, investigation, approved, closed, reopened)"
+        columns:
+          - name: transaction_id
+            tests: [not_null, unique]
+          - name: claim_id
+            tests:
+              - not_null
+          - name: event_type
+          - name: event_timestamp

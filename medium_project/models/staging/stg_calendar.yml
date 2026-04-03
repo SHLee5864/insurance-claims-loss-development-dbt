@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_calendar
+    description: Monthly macro-level calendar table containing external shock indicators
+      (COVID waves, lockdowns, weather events, travel booms) and macro inflation
+      factors used for exposure, claims, and premium normalization.
+
+    columns:
+      - name: date_month
+        description: "Month identifier for the calendar (first day of each month)."
+        tests:
+          - not_null
+          - unique
+
+      - name: is_covid_wave
+        description: "Indicates whether a COVID wave occurred during this month (macro-level)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: is_covid_lockdown
+        description: "Indicates whether a COVID lockdown was active during this month."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: is_weather_event
+        description: "Indicates whether a major weather-related event occurred during this month."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: travel_boom
+        description: "Indicates whether travel activity surged during this month."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: macro_inflation_factor
+        description: Monthly macro-level inflation factor representing external economic
+          conditions (e.g., repair cost inflation, supply chain effects).
+        tests:
+          - not_null

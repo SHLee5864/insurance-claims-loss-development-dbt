@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_payments
+    description: Staging table containing individual claim payment transactions. Each row
+      represents a single payment event linked to a claim.
+
+    columns:
+      - name: payment_id
+        description: "Unique identifier for each payment transaction."
+        tests:
+          - not_null
+          - unique
+
+      - name: claim_id
+        description: "Identifier of the claim associated with the payment."
+        tests:
+          - not_null
+
+      - name: payment_date
+        description: "Date when the payment was made."
+        tests:
+          - not_null
+
+      - name: payment_amount
+        description: "Amount paid for the claim on the given payment date."
+        tests:
+          - not_null

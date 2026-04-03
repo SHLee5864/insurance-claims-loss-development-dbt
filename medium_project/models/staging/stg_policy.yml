@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_policy
+    description: Staging table containing policy-level contract information including
+      inception/expiration dates, region, premium amount, and a surrogate
+      policy key for downstream dimensional modeling.
+
+    columns:
+      - name: policy_number
+        description: "Unique identifier for each insurance policy."
+        tests:
+          - not_null
+          - unique
+
+      - name: policy_holder_id
+        description: "Identifier of the policyholder associated with the policy."
+        tests:
+          - not_null
+
+      - name: inception_date
+        description: "Date when the policy coverage begins."
+        tests:
+          - not_null
+
+      - name: expiration_date
+        description: "Date when the policy coverage ends."
+        tests:
+          - not_null
+
+      - name: region
+        description: "Geographical region where the policyholder or insured risk is located."
+        tests:
+          - not_null
+
+      - name: premium_amount
+        description: "Annual premium amount charged for the policy."
+        tests:
+          - not_null
+
+      - name: policy_key
+        description: "Surrogate key generated from policy_number for dimensional modeling."
+        tests:
+          - not_null
+          - unique

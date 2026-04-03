@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: stg_exposure
+    description: Monthly exposure table representing contract-level earned exposure and
+      earned premium for each policy-month. This table contains only micro-level
+      contract information; macro-level calendar effects are joined later in INT.
+
+    columns:
+      - name: policy_number
+        description: "Unique policy identifier associated with the exposure record."
+        tests:
+          - not_null
+
+      - name: policy_holder_id
+        description: "Identifier of the policyholder."
+        tests:
+          - not_null
+
+      - name: region
+        description: "Geographical region of the policyholder or insured risk."
+        tests:
+          - not_null
+
+      - name: inception_date
+        description: "Policy inception date."
+        tests:
+          - not_null
+
+      - name: expiration_date
+        description: "Policy expiration date."
+        tests:
+          - not_null
+
+      - name: date_month
+        description: Month for which exposure is calculated. Represents the contract-month
+          generated via cross-join with the calendar.
+        tests:
+          - not_null
+
+      - name: premium_amount
+        description: "Annual premium amount for the policy."
+        tests:
+          - not_null
+
+      - name: earned_exposure
+        description: "Monthly earned exposure (typically 1/12 for active months)."
+        tests:
+          - not_null
+
+      - name: earned_premium
+        description: "Monthly earned premium derived from annual premium."
+        tests:
+          - not_null
