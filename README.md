@@ -40,16 +40,16 @@ int_exposure_summary → mart_exposure_alignment
 python -m venv venv && venv\Scripts\activate  # Windows
 pip install dbt-duckdb dbt-utils
 
-# 2. 패키지 설치
+# 2. Install the package
 dbt deps
 
-# 3. seed 적재 (RAW CSV)
+# 3. Store the seed (RAW CSV)
 dbt seed
 
-# 4. 전체 모델 실행
+# 4. Execution of all models
 dbt run
 
-# 5. 테스트
+# 5. Test
 dbt test
 
 ---
@@ -71,7 +71,7 @@ insurance_claims_loss_development_dbt:
 
 ## 📊 Model of MART 
 
-| 모델 | 설명 |
+| Model | Description |
 |------|------|
 | mart_paid_triangle      | AY × DevMonth accumulated amount of paid Triangle |
 | mart_incurred_triangle  | Paid + Reserve Incurred Triangle |
