@@ -39,7 +39,8 @@ models:
         description: "Type of loss."
         tests:
           - accepted_values:
-              values: ["collision", "glass", "bodily", "theft"]
+              arguments:
+                values: ["collision", "glass", "bodily", "theft"]
 
       - name: claimant_age
         description: "Age of claimant at time of loss."
@@ -48,7 +49,8 @@ models:
         description: "Region of the policy."
         tests:
           - accepted_values:
-              values: ["North", "South", "East", "West"]
+              arguments:
+                values: ["North", "South", "East", "West"]
 
       - name: covid_wave_flag
         description: "Flag indicating COVID wave period."

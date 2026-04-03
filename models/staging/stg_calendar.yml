@@ -18,28 +18,32 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: is_covid_lockdown
         description: "Indicates whether a COVID lockdown was active during this month."
         tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: is_weather_event
         description: "Indicates whether a major weather-related event occurred during this month."
         tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: travel_boom
         description: "Indicates whether travel activity surged during this month."
         tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
 
       - name: macro_inflation_factor
         description: Monthly macro-level inflation factor representing external economic

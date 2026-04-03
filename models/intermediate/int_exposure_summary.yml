@@ -14,7 +14,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["North", "South", "East", "West"]
+              arguments:
+                values: ["North", "South", "East", "West"]
 
       - name: earned_exposure
         description: "Total earned exposure."

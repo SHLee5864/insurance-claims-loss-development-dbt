@@ -39,7 +39,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['auto rule', 'manual adjuster']
+              arguments:
+                values: ['auto rule', 'manual adjuster']
 
       - name: comment
         description: "Free-text comment associated with the transaction event."

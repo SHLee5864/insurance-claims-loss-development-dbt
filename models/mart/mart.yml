@@ -1,0 +1,72 @@
+version: 2
+
+models:
+
+  - name: mart_paid_triangle
+    description: "Accident Year × Development Month 누적 지급손해 Triangle"
+    columns:
+      - name: accident_year
+        tests:
+          - not_null
+      - name: dev_month
+        tests:
+          - greater_than_or_equal_to_zero
+      - name: paid_to_date
+        tests:
+          - greater_than_or_equal_to_zero
+
+  - name: mart_incurred_triangle
+    description: "Paid + Reserve 기반 Incurred Triangle"
+    columns:
+      - name: accident_year
+        tests:
+          - not_null
+      - name: incurred_amount
+        tests:
+          - greater_than_or_equal_to_zero
+      - name: reserve_amount
+        tests:
+          - greater_than_or_equal_to_zero
+
+  - name: mart_ldf
+    description: "Loss Development Factors (LDF)"
+    columns:
+      - name: ldf
+        tests:
+          - greater_than_or_equal_to_zero
+      - name: cumulative_ldf
+        tests:
+          - greater_than_or_equal_to_zero
+
+  - name: mart_ultimate_loss
+    description: "Accident Year별 Ultimate Loss 산출"
+    columns:
+      - name: accident_year
+        tests:
+          - unique
+          - not_null
+      - name: ultimate_loss
+        tests:
+          - greater_than_or_equal_to_zero
+
+  - name: mart_loss_ratio_by_ay
+    description: "Loss Ratio = Ultimate Loss / Earned Premium"
+    columns:
+      - name: accident_year
+        tests:
+          - unique
+          - not_null
+      - name: loss_ratio
+        tests:
+          - greater_than_or_equal_to_zero
+
+  - name: mart_exposure_alignment
+    description: "AY × Region 기준 Exposure + Ultimate Loss Alignment"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['accident_year', 'region']
+    columns:
+      - name: loss_ratio
+        tests:
+          - greater_than_or_equal_to_zero
