@@ -47,8 +47,6 @@ graph LR
     mart_incurred_triangle --> mart_ldf --> mart_ultimate_loss
     mart_incurred_triangle --> mart_loss_ratio_by_ay
     mart_ldf --> mart_loss_ratio_by_ay
-    mart_ultimate_loss --> mart_exposure_alignment
-    int_exposure_summary --> mart_exposure_alignment
     int_exposure_summary --> mart_loss_ratio_by_ay
     int_exposure_summary --> mart_ultimate_loss
 ```
