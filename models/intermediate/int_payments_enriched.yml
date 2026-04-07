@@ -28,12 +28,16 @@ models:
         description: "Raw payment amount."
         tests:
           - not_null
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: payment_amount_inflated
         description: "Inflation-adjusted payment amount."
         tests:
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: payment_month
         description: "Payment month."

@@ -1,38 +1,43 @@
 {{ config(materialized='table') }}
 
-WITH latest_dm AS (
-    SELECT
-        accident_year,
-        MAX(dev_month) AS latest_dev_month
+WITH latest_val AS (
+    SELECT MAX(valuation_year) AS max_val_year
     FROM {{ ref('mart_incurred_triangle') }}
-    GROUP BY 1
 ),
 
 latest_incurred AS (
     SELECT
         t.accident_year,
-        t.dev_month,
+        t.valuation_year,
+        t.dev_year,
         t.incurred_amount
     FROM {{ ref('mart_incurred_triangle') }} t
+    JOIN latest_val ON t.valuation_year = latest_val.max_val_year
 ),
 
-ldf AS (
-    SELECT
-        dev_month_from,
-        MAX(cumulative_ldf) AS cumulative_ldf
+ldf_latest AS (
+    SELECT dev_year_from, cumulative_ldf
     FROM {{ ref('mart_ldf') }}
+),
+
+exposure AS (
+    SELECT accident_year, SUM(earned_premium) AS earned_premium
+    FROM {{ ref('int_exposure_summary') }}
     GROUP BY 1
 )
 
 SELECT
-    l.accident_year,
-    l.latest_dev_month,
-    i.incurred_amount AS latest_incurred,
-    d.cumulative_ldf,
-    i.incurred_amount * d.cumulative_ldf AS ultimate_loss
-FROM latest_dm l
-JOIN latest_incurred i
-    ON l.accident_year = i.accident_year
-   AND l.latest_dev_month = i.dev_month
-LEFT JOIN ldf d
-    ON d.dev_month_from = l.latest_dev_month
+    li.accident_year,
+    li.valuation_year,
+    li.dev_year,
+    ROUND(li.incurred_amount, 2)                          AS latest_incurred,
+    ROUND(coalesce(ldf.cumulative_ldf, 1.0), 4)           AS cumulative_ldf,
+    ROUND(li.incurred_amount * coalesce(ldf.cumulative_ldf, 1.0), 2)     AS ultimate_loss,
+    ROUND(e.earned_premium, 2)                             AS earned_premium,
+    ROUND(li.incurred_amount * coalesce(ldf.cumulative_ldf, 1.0)
+          / NULLIF(e.earned_premium, 0), 4)               AS loss_ratio
+FROM latest_incurred li
+LEFT JOIN ldf_latest ldf
+    ON li.dev_year = ldf.dev_year_from
+LEFT JOIN exposure e USING (accident_year)
+ORDER BY li.accident_year

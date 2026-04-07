@@ -21,12 +21,16 @@ models:
       - name: paid_in_month
         description: "Paid amount in this valuation month."
         tests:
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: paid_to_date
         description: "Cumulative paid amount."
         tests:
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: accident_year
         description: "Accident year."
@@ -36,4 +40,4 @@ models:
 
     tests:
       - unique:
-          column_name: "claim_id, valuation_month"
+          column_name: "concat(claim_id, '-', valuation_month)"

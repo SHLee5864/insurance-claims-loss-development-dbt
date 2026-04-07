@@ -29,4 +29,4 @@ models:
 
     tests:
       - unique:
-          column_name: "accident_year, region"
+          column_name: "concat(accident_year, '-', region)"

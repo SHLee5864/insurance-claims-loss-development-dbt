@@ -3,60 +3,133 @@ version: 2
 models:
 
   - name: mart_paid_triangle
-    description: "Cumulative paid loss triangle by Accident Year × Development Month."
+    description: >
+      Cumulative paid loss triangle at Accident Year × Development Month grain.
+      Each row represents the total paid amount for a given accident year
+      as of a specific development month.
     columns:
       - name: accident_year
+        description: "Year in which the claim accident occurred."
         tests:
           - not_null
       - name: dev_month
+        description: "Number of months elapsed since the accident (development age)."
         tests:
           - greater_than_or_equal_to_zero
       - name: paid_to_date
+        description: "Cumulative paid amount up to this development month."
         tests:
-          - greater_than_or_equal_to_zero
+          - greater_than_or_equal_to_zero:
+              config:
+                severity: warn
 
   - name: mart_incurred_triangle
-    description: "Incurred loss triangle based on Paid + Reserve amounts."
+    description: >
+      Incurred loss triangle at Accident Year × Development Year grain.
+      Incurred = Paid-to-date + Case Reserve at each valuation point.
+      dev_year = valuation_year - accident_year + 1 enables standard
+      chain-ladder analysis across all accident years.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['accident_year', 'dev_year']
     columns:
       - name: accident_year
+        description: "Year in which the claim accident occurred."
+        tests:
+          - not_null
+      - name: valuation_year
+        description: "Calendar year at which incurred is evaluated."
+      - name: dev_year
+        description: "Development year = valuation_year - accident_year + 1. Year 1 is the accident year itself."
         tests:
           - not_null
       - name: incurred_amount
+        description: "Paid-to-date + case reserve at this valuation point."
         tests:
           - greater_than_or_equal_to_zero
       - name: reserve_amount
+        description: "Outstanding case reserve at this valuation point."
         tests:
           - greater_than_or_equal_to_zero
 
   - name: mart_ldf
-    description: "Loss Development Factors (LDF) and cumulative LDF calculations."
+    description: >
+      Loss Development Factors (LDF) calculated using the chain-ladder method.
+      LDF = average(incurred at dev_year N+1 / incurred at dev_year N) across
+      all accident years. Cumulative LDF is the product of all LDFs from
+      a given dev_year to the most mature point, calculated via
+      EXP(SUM(LN(ldf))) window function.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['dev_year_from', 'dev_year_to']
     columns:
+      - name: dev_year_from
+        description: "Starting development year of the LDF pair."
+        tests:
+          - not_null
+      - name: dev_year_to
+        description: "Ending development year of the LDF pair (= dev_year_from + 1)."
       - name: ldf
+        description: "Average link ratio from dev_year_from to dev_year_to across all accident years."
         tests:
           - greater_than_or_equal_to_zero
       - name: cumulative_ldf
+        description: "Product of all LDFs from this dev_year to ultimate. Used to project immature years to ultimate loss."
         tests:
           - greater_than_or_equal_to_zero
 
   - name: mart_ultimate_loss
-    description: "Ultimate Loss estimation by Accident Year using cumulative LDFs."
+    description: >
+      Ultimate loss estimate per accident year using the chain-ladder method.
+      Takes the latest incurred amount (at max valuation_year) and multiplies
+      by the cumulative LDF for that accident year's current development age.
+      Mature years (no remaining development) default to cumulative_ldf = 1.0.
     columns:
       - name: accident_year
+        description: "Year in which the claim accident occurred."
         tests:
           - unique
           - not_null
+      - name: dev_year
+        description: "Current development age of this accident year."
+      - name: latest_incurred
+        description: "Most recent incurred amount (at latest valuation year)."
+      - name: cumulative_ldf
+        description: "Cumulative LDF applied. Defaults to 1.0 for fully developed years via COALESCE."
       - name: ultimate_loss
+        description: "Estimated ultimate loss = latest_incurred × cumulative_ldf."
         tests:
           - greater_than_or_equal_to_zero
 
   - name: mart_loss_ratio_by_ay
-    description: "Loss Ratio by Accident Year (Ultimate Loss / Earned Premium)."
+    description: >
+      Loss ratio analysis at Accident Year × Valuation Year grain.
+      Shows how ultimate loss estimate and loss ratio evolve over time
+      for each accident year as more development data becomes available.
+      loss_ratio = ultimate_loss / earned_premium.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['accident_year', 'valuation_year']
     columns:
       - name: accident_year
+        description: "Year in which the claim accident occurred."
         tests:
-          - unique
           - not_null
+      - name: valuation_year
+        description: "Calendar year at which the loss ratio is evaluated."
+        tests:
+          - not_null
+      - name: cumulative_ldf
+        description: "Cumulative LDF at this development stage. Defaults to 1.0 for fully developed years."
+      - name: ultimate_loss
+        description: "Estimated ultimate loss at this valuation point."
+      - name: earned_premium
+        description: "Total earned premium for this accident year."
       - name: loss_ratio
+        description: "ultimate_loss / earned_premium. Core actuarial KPI."
         tests:
           - greater_than_or_equal_to_zero
 

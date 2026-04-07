@@ -47,7 +47,7 @@ final as (
         cal.macro_inflation_factor as inflation_factor,
 
         -- inflation 적용 지급액
-        pay.payment_amount * cal.macro_inflation_factor as payment_amount_inflated,
+        round(pay.payment_amount * cal.macro_inflation_factor, 2) as payment_amount_inflated,
 
         -- accident_year 상속
         cd.accident_year

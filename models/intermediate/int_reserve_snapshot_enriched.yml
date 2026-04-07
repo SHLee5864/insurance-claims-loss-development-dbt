@@ -36,4 +36,4 @@ models:
 
     tests:
       - unique:
-          column_name: "claim_id, valuation_month"
+          column_name: "concat(claim_id, '-', valuation_month)"

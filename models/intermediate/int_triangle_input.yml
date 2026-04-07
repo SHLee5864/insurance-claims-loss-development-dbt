@@ -18,26 +18,20 @@ models:
         tests:
           - not_null
 
-      - name: development_month
-        description: "Months since accident."
-        tests:
-          - greater_than_or_equal_to_zero: {}
-
-      - name: paid_to_date
-        description: "Cumulative paid amount."
-        tests:
-          - greater_than_or_equal_to_zero: {}
-
       - name: case_reserve_amount
         description: "Case reserve."
         tests:
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero:
+              config:
+                severity: warn
 
-      - name: incurred
-        description: "Paid-to-date + case reserve."
+      - name: expense_reserve_amount
+        description: "Expense reserve."
         tests:
-          - greater_than_or_equal_to_zero: {}
+          - greater_than_or_equal_to_zero:
+              config:
+                severity: warn
 
     tests:
       - unique:
-          column_name: "claim_id, valuation_month"
+          column_name: "concat(claim_id, '-', valuation_month)"

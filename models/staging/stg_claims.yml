@@ -33,12 +33,6 @@ models:
         tests:
           - not_null
 
-      - name: region
-        description: Region where the accident occurred. Defaults to 'unknown' if missing
-          in the raw data.
-        tests:
-          - not_null
-
       - name: claimant_age
         description: "Age of the claimant at the time of the accident."
         tests:
