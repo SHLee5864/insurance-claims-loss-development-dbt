@@ -23,6 +23,9 @@ models:
           negative values in raw data; no transformation is applied in STG.
         tests:
           - not_null
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: expense_reserve_amount
         description: Expense reserve amount recorded on the valuation date. May contain
@@ -31,5 +34,6 @@ models:
           - not_null
 
     tests:
-      - unique:
-          column_name: "concat(claim_id, '-', valuation_date)"
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['claim_id', 'valuation_date']

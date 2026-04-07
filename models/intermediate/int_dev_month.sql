@@ -24,11 +24,11 @@ final as (
         valuation_month,
         EXTRACT(YEAR FROM valuation_month) AS valuation_year,
 
-        -- development month 계산
+        -- development month
         datediff(month, accident_month, valuation_month) as development_month,
 
         -- optional: development year/quarter
-        extract(year from valuation_month) - extract(year from accident_month) as development_year,
+        extract(year from valuation_month) - extract(year from accident_month) + 1 as development_year,
         (datediff(month, accident_month, valuation_month)) / 3 as development_quarter,
 
         paid_in_month,

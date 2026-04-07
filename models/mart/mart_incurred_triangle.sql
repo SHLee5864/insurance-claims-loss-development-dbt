@@ -10,7 +10,7 @@ WITH paid AS (
         development_month,
         paid_to_date
     FROM {{ ref('int_dev_month') }}
-    WHERE MONTH(valuation_month) = 12   -- ← 연말만
+    WHERE MONTH(valuation_month) = 12   -- Year-end snapshots only
 ),
 
 reserve AS (
@@ -19,7 +19,7 @@ reserve AS (
         valuation_month,
         case_reserve_amount + expense_reserve_amount AS reserve_amount
     FROM {{ ref('int_reserve_snapshot_enriched') }}
-    WHERE MONTH(valuation_month) = 12   -- ← 연말만
+    WHERE MONTH(valuation_month) = 12   -- Year-end snapshots only
 ),
 
 joined AS (

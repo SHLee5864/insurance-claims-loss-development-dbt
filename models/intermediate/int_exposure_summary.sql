@@ -19,6 +19,8 @@ with_ay as (
 
     select
         region,
+        -- Named accident_year for downstream join compatibility
+        -- Actually represents the calendar year of premium earning
         extract(year from date_month) as accident_year,
         earned_exposure,
         earned_premium

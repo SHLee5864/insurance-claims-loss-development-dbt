@@ -6,7 +6,7 @@ with reserve as (
 
     select
         r.claim_id,
-        cast(r.valuation_date as date) as valuation_date,
+        r.valuation_date as valuation_date,
         date_trunc('month', r.valuation_date) as valuation_month,
         r.case_reserve_amount,
         r.expense_reserve_amount

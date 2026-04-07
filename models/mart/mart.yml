@@ -7,6 +7,10 @@ models:
       Cumulative paid loss triangle at Accident Year × Development Month grain.
       Each row represents the total paid amount for a given accident year
       as of a specific development month.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['accident_year', 'dev_month']
     columns:
       - name: accident_year
         description: "Year in which the claim accident occurred."
@@ -134,12 +138,30 @@ models:
           - greater_than_or_equal_to_zero
 
   - name: mart_exposure_alignment
-    description: "Exposure and Ultimate Loss alignment by Accident Year × Region."
+    description: >
+      Earned exposure, premium, and ultimate loss aligned at
+      Accident Year × Region grain. Enables regional loss ratio
+      comparison and portfolio mix analysis.
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns: ['accident_year', 'region']
     columns:
-      - name: loss_ratio
-        tests:
-          - greater_than_or_equal_to_zero
+    - name: accident_year
+      description: "Year in which the claim accident occurred."
+      tests:
+        - not_null
+    - name: region
+      description: "Geographic region (North/South/East/West)."
+      tests:
+        - not_null
+    - name: earned_exposure
+      description: "Total earned exposure for this AY × Region."
+    - name: earned_premium
+      description: "Total earned premium for this AY × Region."
+    - name: ultimate_loss
+      description: "Estimated ultimate loss for this accident year."
+    - name: loss_ratio
+      description: "ultimate_loss / earned_premium."
+      tests:
+        - greater_than_or_equal_to_zero

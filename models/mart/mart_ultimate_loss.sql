@@ -32,10 +32,7 @@ SELECT
     li.dev_year,
     ROUND(li.incurred_amount, 2)                          AS latest_incurred,
     ROUND(coalesce(ldf.cumulative_ldf, 1.0), 4)           AS cumulative_ldf,
-    ROUND(li.incurred_amount * coalesce(ldf.cumulative_ldf, 1.0), 2)     AS ultimate_loss,
-    ROUND(e.earned_premium, 2)                             AS earned_premium,
-    ROUND(li.incurred_amount * coalesce(ldf.cumulative_ldf, 1.0)
-          / NULLIF(e.earned_premium, 0), 4)               AS loss_ratio
+    ROUND(li.incurred_amount * coalesce(ldf.cumulative_ldf, 1.0), 2)     AS ultimate_loss
 FROM latest_incurred li
 LEFT JOIN ldf_latest ldf
     ON li.dev_year = ldf.dev_year_from

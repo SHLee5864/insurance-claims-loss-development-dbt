@@ -19,7 +19,7 @@ calendar as (
     from {{ ref('stg_calendar') }}
 ),
 
--- Claim × Month date spine 생성
+-- Claim × Month date spine
 claim_months as (
 
     select
@@ -42,7 +42,7 @@ payments as (
 
 ),
 
--- 월별 지급액 집계
+-- monthly paid amount aggregation
 paid_monthly as (
 
     select
@@ -62,7 +62,7 @@ paid_monthly as (
         cm.valuation_month
 ),
 
--- 누적 지급액 계산
+-- cumulative paid calculation
 final as (
 
     select

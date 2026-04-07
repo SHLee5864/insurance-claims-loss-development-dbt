@@ -18,10 +18,7 @@ SELECT
     accident_year,
     dev_month,
     SUM(paid_to_date) AS paid_to_date,
-    COUNT(DISTINCT claim_id) AS n_claims,
-    region,
-    loss_type,
-    claimant_age
+    COUNT(DISTINCT claim_id) AS n_claims
 FROM base
-GROUP BY 1,2,5,6,7
+GROUP BY 1,2
 ORDER BY 1,2

@@ -17,10 +17,17 @@ Calculant les ratios sinistres/primes par année d'accident et par région
 
 
 📐 Architecture
-RAW (seed/CSV) → STG (vue) → INT (table) → MART (table)
-CoucheMatérialisationRôleRAWseedDonnées CSV synthétiques générées en Python. Aucune transformation.STGvueTranstypage, renommage des colonnes, clés de substitution, tests de qualité de baseINTtableReconstruction par axes AY · Mois de développement · Valorisation. Création de l'axe temporel. Préparation des entrées du triangle.MARTtableTriangle, LDF, Sinistre ultime, Ratio sinistres/primes — prêts pour l'analyse actuarielle
 
-Pourquoi table pour INT ? int_claim_monthly_paid génère un axe Sinistre × Mois de valorisation dont le volume de lignes croît exponentiellement. L'utilisation de ephemeral intégrerait ce calcul comme CTE imbriqué et risquerait de faire exploser le plan d'exécution dans Databricks. La matérialisation en table est un choix délibéré.
+`RAW (seed/CSV) → STG (vue) → INT (vue) → MART (table)`
+
+| Couche | Matérialisation | Rôle |
+|--------|----------------|------|
+| RAW | seed | Données CSV synthétiques générées en Python. Aucune transformation. |
+| STG | vue | Transtypage, renommage des colonnes, clés de substitution, tests de qualité de base |
+| INT | vue | Reconstruction par axes AY · Mois de développement · Valorisation. Création de l'axe temporel. Préparation des entrées du triangle. |
+| MART | table | Triangle, LDF, Sinistre ultime, Ratio S/P — prêts pour l'analyse actuarielle |
+
+> Les modèles INT sont matérialisés en vues par souci de simplicité. En production avec des volumes plus importants, `int_claim_monthly_paid` serait le premier candidat pour une matérialisation en table en raison de l'explosion combinatoire de son axe Sinistre × Mois.
 
 
 🗂 Lignage des modèles

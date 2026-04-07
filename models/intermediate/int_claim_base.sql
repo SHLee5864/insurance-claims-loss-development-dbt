@@ -52,10 +52,10 @@ final as (
         p.loss_type,
         p.claimant_age,
 
-        -- region은 policy 기준으로만 유지
+        -- Region sourced from policy data
         p.policy_region as region,
 
-        -- 사고월 기준 환경 플래그
+        -- Macro flags based on accident month
         cf.is_covid_wave       as covid_wave_flag,
         cf.is_covid_lockdown   as covid_lockdown_flag,
         cf.is_weather_event    as weather_event_flag,

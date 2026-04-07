@@ -12,11 +12,6 @@ models:
         tests:
           - not_null
 
-      - name: policy_holder_id
-        description: "Identifier of the policyholder."
-        tests:
-          - not_null
-
       - name: inception_date
         description: "Policy inception date."
         tests:
@@ -42,8 +37,16 @@ models:
         description: "Monthly earned exposure (typically 1/12 for active months)."
         tests:
           - not_null
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: earned_premium
         description: "Monthly earned premium derived from annual premium."
         tests:
           - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['policy_number', 'date_month']

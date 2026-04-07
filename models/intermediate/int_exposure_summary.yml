@@ -28,5 +28,6 @@ models:
           - greater_than_or_equal_to_zero: {}
 
     tests:
-      - unique:
-          column_name: "concat(accident_year, '-', region)"
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: ['accident_year', 'region']

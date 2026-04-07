@@ -5,6 +5,9 @@ models:
     description: Staging table containing policy-level contract information including
       inception/expiration dates, region, premium amount, and a surrogate
       policy key for downstream dimensional modeling.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "expiration_date > inception_date"
 
     columns:
       - name: policy_number
@@ -27,16 +30,22 @@ models:
         description: "Date when the policy coverage ends."
         tests:
           - not_null
-
+          
       - name: region
         description: "Geographical region where the policyholder or insured risk is located."
         tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: ["North", "South", "East", "West"]
 
       - name: premium_amount
         description: "Annual premium amount charged for the policy."
         tests:
           - not_null
+          - greater_than_or_equal_to_zero: 
+              config:
+                severity: warn
 
       - name: policy_key
         description: "Surrogate key generated from policy_number for dimensional modeling."

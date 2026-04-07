@@ -6,7 +6,7 @@ Actuarial design principles:
   - Claim frequency: Negative Binomial approximated via Poisson-Gamma
   - Payment: Total expected loss split into installments (Dirichlet)
   - Reserve: Ultimate - paid_to_date (case reserve = remaining expected)
-  - Reserve decay: Exponential decay on IBNR component only
+  - Reserve: Learning curve model — initial underestimation converging to ultimate
   - Inflation: Deterministic factor by year
   - Macro shocks: COVID frequency reduction, weather severity loading
 
@@ -58,9 +58,6 @@ def travel_factor(dt):
     """Post-COVID travel boom increases exposure frequency."""
     return 1.15 if dt.year >= 2022 else 1.0
 
-def inflation_factor(dt):
-    return inflation_map.get(dt.year, inflation_map[max(inflation_map.keys())])
-
 # ═══════════════════════════════════════════════════════════════════════════
 # 1. POLICY GENERATION
 # ═══════════════════════════════════════════════════════════════════════════
@@ -90,6 +87,8 @@ exposure = exposure[
     )
 ].copy()
 
+exposure = exposure.drop(columns=["policy_holder_id", "region"])
+
 exposure["earned_exposure"] = 1 / 12
 exposure["earned_premium"]  = exposure["premium_amount"] / 12
 
@@ -118,7 +117,6 @@ for _, row in exposure.iterrows():
                 ["collision", "bodily", "glass", "theft"],
                 p=[0.60, 0.20, 0.15, 0.05]
             ),
-            "region":        row["region"],
             "claimant_age":  np.random.randint(18, 80)
         })
 
@@ -135,8 +133,9 @@ print(f"Claims generated: {len(claims)}")
 #   Payments: total_expected split into n installments (Dirichlet)
 #             each installment adjusted for inflation + weather
 #
-#   Reserve(m) = max(0, total_expected - paid_to_date(m))
-#              × (1 + IBNR_loading × exp(-m/τ))
+#   Reserve(m) = max(0, estimate(m) - paid_to_date(m))
+#   estimate(m) = total_expected × [0.60 + 0.40 × (1 - exp(-m/18))]
+#   → initial underestimation gradually corrected as claim develops
 #
 #   IBNR_loading: uncertainty margin in early months (fades with time)
 #   This ensures reserve ≥ remaining expected payments in early dev months,
@@ -173,20 +172,20 @@ for _, cl in claims.iterrows():
     total_expected = np.random.lognormal(mean=mu, sigma=sigma) * weather_at_accident
 
     # ── Payments ──────────────────────────────────────────────────────────
-    # loss_type별 지급 횟수
+    # payment count by loss_type
     payment_schedule = {
-        "glass":     (1, 2),   # 소액, 빠른 정산
+        "glass":     (1, 2),   # Low severity, quick payment
         "collision": (2, 4),
         "theft":     (1, 3),
-        "bodily":    (3, 7),   # 장기 분할 (부상 치료 기간 반영)
+        "bodily":    (3, 7),   # long-tail split (injury treatment period)
     }
     lo, hi = payment_schedule[loss_type]
     n_payments = np.random.randint(lo, hi + 1)
 
-    # 지급 시점: dev_month 단위로 분산 (타이밍 노이즈 최소화)
-    # glass/theft: 빠른 정산 (dev_month 1~6)
-    # collision:   중기 정산 (dev_month 3~18)
-    # bodily:      장기 정산 (dev_month 6~36)
+    # payment timing: distributed by dev_month (minimizing timing noise)
+    # glass/theft: quick settlement (dev_month 1~6)
+    # collision:  mid-term settlement (dev_month 3~18)
+    # bodily:      long-term settlement (dev_month 6~36)
     timing_range = {
         "glass":     (1, 6),
         "collision": (3, 18),
@@ -207,7 +206,6 @@ for _, cl in claims.iterrows():
         if pay_date > pd.Timestamp("2024-12-31"):
             continue
         amt = total_expected * split \
-              * inflation_factor(pay_date) \
               * weather_severity_factor(pay_date)
         paid_amounts.append((pay_date, round(float(amt), 2)))
         payments.append({
@@ -218,11 +216,9 @@ for _, cl in claims.iterrows():
         })
 
     # ── Reserve snapshots ─────────────────────────────────────────────────
-    # ── 새 파라미터 ──
-    INITIAL_ESTIMATE_RATIO = 0.60  # 초기엔 ultimate의 60%만 인식
-    LEARNING_TAU = 18              # 18개월에 걸쳐 true ultimate로 수렴
+    INITIAL_ESTIMATE_RATIO = 0.60  # Initially recognize only 60% of the ultimate
+    LEARNING_TAU = 18              # Converge to true ultimate over 18 months
 
-    # ── Reserve snapshots (수정) ──
     cumulative_paid = 0.0
     for m in range(120):
         val_date = (cl["accident_date"] + pd.DateOffset(months=m)).normalize()
@@ -234,15 +230,15 @@ for _, cl in claims.iterrows():
             if pd.Timestamp(pd_date) <= val_date
         )
 
-        # 추정치가 점차 true ultimate에 수렴
+        # Estimate gradually converges to true ultimate
         learning_progress = 1 - np.exp(-m / LEARNING_TAU)
         current_estimate = (
             total_expected * INITIAL_ESTIMATE_RATIO
             + total_expected * (1 - INITIAL_ESTIMATE_RATIO) * learning_progress
         )
 
-        # 노이즈 추가 (실무에서 reserve는 정확하지 않음)
-        noise = np.random.normal(1.0, 0.03)  # ±3% 변동
+        # Add noise (reserves are imprecise in practice)
+        noise = np.random.normal(1.0, 0.03)  # ±3% 
         current_estimate *= noise
 
         case_reserve = max(0.0, current_estimate - cumulative_paid)

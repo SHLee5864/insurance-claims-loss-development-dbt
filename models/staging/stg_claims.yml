@@ -27,11 +27,14 @@ models:
         description: "Date when the claim was reported to the insurer."
         tests:
           - not_null
+          - accident_before_report_date: {}
 
       - name: loss_type
         description: "Categorical type of loss (e.g., collision, theft, injury)."
         tests:
           - not_null
+          - accepted_values:
+              values: ['collision', 'bodily', 'glass', 'theft']
 
       - name: claimant_age
         description: "Age of the claimant at the time of the accident."

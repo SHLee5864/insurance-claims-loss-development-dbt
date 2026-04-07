@@ -37,8 +37,8 @@ cumulative AS (
         dev_year_from,
         dev_year_to,
         ldf,
-        -- dev_year_from부터 끝까지의 누적 LDF
-        -- 역순으로 곱해야 함
+        -- Cumulative LDF from this dev_year to ultimate
+        -- Multiply in reverse order via log-sum-exp
         EXP(SUM(LN(ldf)) OVER (
             ORDER BY dev_year_from DESC
             ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING

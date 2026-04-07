@@ -18,6 +18,9 @@ sources:
             tests: [not_null]
           - name: date_month
             tests: [not_null]
+        test:
+          - unique:
+              column_name: "concat(policy_number, '-', date_month)"
 
       - name: raw_claims
         description: "Claim-level data"
@@ -26,6 +29,12 @@ sources:
             tests: [not_null, unique]
           - name: policy_number
             tests: [not_null]
+          - name: policy_number
+            tests:
+              - relationships:
+                  arguments:
+                    to: ref('stg_policy')
+                    field: policy_number
 
       - name: raw_payments
         description: "Payment transactions"
@@ -33,8 +42,12 @@ sources:
           - name: payment_id
             tests: [not_null, unique]
           - name: claim_id
-            tests: [not_null]
-
+            tests: 
+              - not_null
+              - relationships:
+                  arguments:
+                    to: ref('stg_claims')
+                    field: claim_id
       - name: raw_reserve_snapshot
         description: "Monthly reserve snapshot per claim"
         columns:
@@ -42,6 +55,9 @@ sources:
             tests: [not_null]
           - name: valuation_date
             tests: [not_null]
+        test:
+          - unique:
+              column_name: "concat(claim_id, '-', valuation_date)"
 
       - name: calendar
         description: "Monthly calendar with COVID, weather, travel, inflation signals"

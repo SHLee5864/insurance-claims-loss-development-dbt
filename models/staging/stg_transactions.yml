@@ -22,6 +22,9 @@ models:
         description: Type of event recorded (e.g., creation, update, assignment, closure).
         tests:
           - not_null
+          - accepted_values:
+              arguments:
+                values: ['received', 'opened', 'investigation', 'approved', 'closed', 'reopened']
 
       - name: event_timestamp
         description: "Timestamp when the event occurred."
