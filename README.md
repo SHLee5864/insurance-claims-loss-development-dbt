@@ -90,7 +90,8 @@ WARN: Domain anomalies that are valid in practice (e.g. negative payments from r
 Negative payment amounts are intentionally retained in the seed data and flagged as WARN — mirroring real-world scenarios where claim reversals produce negative values.
 
 ⚙️ Quick Start (DuckDB — Local Dev)
-bash# 1. Create virtual environment
+```bash
+# 1. Create virtual environment
 python -m venv venv
 venv\Scripts\activate          # Windows
 source venv/bin/activate       # Mac/Linux
@@ -112,6 +113,7 @@ dbt run
 
 # 7. Run tests
 dbt test
+```
 
 🔌 Databricks Connection (profiles.yml)
 yamlinsurance_claims_loss_development_dbt:

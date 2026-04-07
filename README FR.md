@@ -91,7 +91,8 @@ WARN : Anomalies métier valides en pratique (ex. paiements négatifs issus de r
 Les montants de paiement négatifs sont conservés intentionnellement dans les données de seed et signalés en WARN — conformément aux scénarios réels où les extournes de sinistres produisent des valeurs négatives.
 
 ⚙️ Démarrage rapide (DuckDB — développement local)
-bash# 1. Créer l'environnement virtuel
+```bash
+# 1. Créer l'environnement virtuel
 python -m venv venv
 venv\Scripts\activate          # Windows
 source venv/bin/activate       # Mac/Linux
@@ -113,6 +114,7 @@ dbt run
 
 # 7. Lancer les tests
 dbt test
+```
 
 🔌 Connexion Databricks (profiles.yml)
 yamlinsurance_claims_loss_development_dbt:
