@@ -69,7 +69,7 @@ policies = pd.DataFrame({
         pd.date_range("2015-01-01", "2024-12-31"), N_POLICIES),
     "policy_holder_id": np.random.randint(10000, 99999, N_POLICIES),
     "premium_amount":  np.random.lognormal(mean=9.9, sigma=0.3, size=N_POLICIES).clip(5000, 50000),
-    # Log-normal premium: median ≈ 493, more realistic than normal
+    # Log-normal premium: median ≈ 19,886 (fleet/corporate motor portfolio level)
     "region": np.random.choice(["North", "South", "East", "West"], N_POLICIES)
 })
 policies["expiration_date"] = policies["inception_date"] + pd.DateOffset(years=1)
