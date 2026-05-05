@@ -145,7 +145,7 @@ Validé sur : Databricks SQL Warehouse (Serverless), dbt-databricks 1.11.6
 | Ce projet | Réalité en production |
 |---|---|
 | Données synthétiques générées en Python | Données issues des systèmes de gestion de sinistres (Guidewire, Duck Creek) |
-| Chain ladder SQL monoposte | Méthode de Mack avec écart-type et intervalles de confiance |
+| Chain ladder + Méthode de Mack (Python) | Bootstrap chain ladder, Bornhuetter-Ferguson, triangles segmentés |
 | LDF moyen simple | LDF pondéré par les volumes ou méthode Bornhuetter-Ferguson |
 | Indicateurs macro statiques | Flux macro en temps réel (IPC, APIs météo) |
 | Sans CI/CD | GitHub Actions → dbt test sur PR → job Databricks au merge |

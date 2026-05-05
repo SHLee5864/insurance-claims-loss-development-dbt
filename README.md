@@ -144,7 +144,7 @@ Validated on: Databricks SQL Warehouse (Serverless), dbt-databricks 1.11.6
 | This project | Production reality |
 |---|---|
 | Synthetic Python-generated data | Raw data from claims management systems (Guidewire, Duck Creek) |
-| Single-node SQL chain ladder | Mack's Method with standard error and confidence intervals |
+| Chain ladder + Mack's Method (Python) | Bootstrap chain ladder, Bornhuetter-Ferguson, segmented triangles |
 | Simple average LDF | Volume-weighted LDF or Bornhuetter-Ferguson method |
 | Static macro calendar flags | Live macro feeds (CPI, weather APIs) |
 | No CI/CD | GitHub Actions → dbt test on PR → Databricks job on merge |
