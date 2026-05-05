@@ -4,7 +4,9 @@ Transforms raw insurance claims data into Loss Development Triangles, LDFs, and 
 
 > **Part 2 of a 3-project series** building toward a full IFRS 17 actuarial data platform.  
 > → **Small:** [Insurance Policy Admin Mart — Portfolio Structure & KPIs](https://github.com/SHLee5864/insurance_policy_admin_mart)  
-> → **Large:** IFRS 17 Analytics Platform on Azure
+> → **Medium-2** : Life Insurance BEL Pipeline (Life, forward-looking)
+> → **Medium-3**: Reinsurance IFRS 17 — Retro Linkage & Loss Recovery
+> → **Large**: Insurance Fraud Detection Pipeline on Azure
 
 🎯 What This Project Does
 Insurance companies must estimate how much they will ultimately pay on claims that are still open — a process called loss development. This pipeline automates that estimation by:
@@ -152,6 +154,23 @@ Validated on: Databricks SQL Warehouse (Serverless), dbt-databricks 1.11.6
 | Normal distribution (severity) | Log-normal — always positive, right-skewed, reflecting occasional large claims |
 | Normal distribution (reserve) | Log-normal — actuarially standard for individual claim reserve estimation |
 | 2% base rate (frequency) | 5% base rate — closer to motor insurance industry benchmark |
+
+## 📈 Mack's Method — Uncertainty Quantification
+
+This project now includes a Mack's Method implementation that runs on top of the dbt-produced triangle.
+
+The chain-ladder pipeline produces point estimates. Mack's Method adds:
+
+- **Volume-weighted LDFs** — replacing simple averages for variance-consistent estimation
+- **σ² estimation** — measuring link ratio scatter at each development transition
+- **MSEP decomposition** — separating process variance (inherent randomness) from parameter variance (estimation uncertainty)
+- **Prediction intervals** — 95% confidence bands around ultimate loss estimates
+
+The implementation lives in `mack_utils.py` — a pure Python module with no framework dependency. 
+It reads the same triangle artifact produced by the governed dbt pipeline. 
+If the triangle changes, Mack results update automatically.
+
+See [Medium Article #8: Mack's Method — Why Point Estimates Are Not Enough](https://medium.com/@lsh5864) for the full analysis.
 
 ## 🔄 Incremental Processing — What Happens When New Data Arrives
 

@@ -4,7 +4,9 @@ Il transforme des données brutes d'assurance en triangles de développement, fa
 
 > **Partie 2 d'une série de 3 projets** construisant une plateforme de données actuarielles IFRS 17.  
 > → **Small :** [Insurance Policy Admin Mart — Structure du portefeuille & KPI](https://github.com/SHLee5864/insurance_policy_admin_mart)  
-> → **Large :** Plateforme IFRS 17 sur Azure
+> → **Medium-2** : Life Insurance BEL Pipeline (Life, forward-looking)
+> → **Medium-3**: Reinsurance IFRS 17 — Retro Linkage & Loss Recovery
+> → **Large**: Insurance Fraud Detection Pipeline on Azure
 
 🎯 Objectif du projet
 Les assureurs doivent estimer le montant qu'ils paieront in fine sur les sinistres encore ouverts — c'est le développement des sinistres. Ce pipeline automatise cette estimation en :
@@ -153,6 +155,23 @@ Validé sur : Databricks SQL Warehouse (Serverless), dbt-databricks 1.11.6
 | Distribution normale (sévérité) | Log-normale — toujours positive, asymétrie droite, reflétant les sinistres importants occasionnels |
 | Distribution normale (provision) | Log-normale — standard actuariel pour l'estimation des provisions individuelles |
 | Taux de base 2% (fréquence) | Taux de base 5% — plus proche des benchmarks sectoriels en assurance automobile |
+
+## 📈 Méthode de Mack — Quantification de l'Incertitude
+
+Ce projet inclut désormais une implémentation de la méthode de Mack qui s'appuie sur le triangle produit par le pipeline dbt.
+
+Le pipeline chain ladder produit des estimations ponctuelles. La méthode de Mack ajoute :
+
+- **LDF pondérés par les volumes** — remplaçant les moyennes simples pour une estimation cohérente en variance
+- **Estimation de σ²** — mesurant la dispersion des link ratios à chaque transition de développement
+- **Décomposition du MSEP** — séparant la variance de processus (aléa intrinsèque) de la variance de paramètre (incertitude d'estimation)
+- **Intervalles de prédiction** — bandes de confiance à 95% autour des estimations de sinistres ultimes
+
+L'implémentation réside dans `mack_utils.py` — un module Python pur sans dépendance de framework.
+Il lit le même artefact triangle produit par le pipeline dbt gouverné.
+Si le triangle change, les résultats de Mack se mettent à jour automatiquement.
+
+Voir [Article Medium #8 : Mack's Method — Why Point Estimates Are Not Enough](https://medium.com/@lsh5864) pour l'analyse complète.
 
 📦 Stack technique
 
